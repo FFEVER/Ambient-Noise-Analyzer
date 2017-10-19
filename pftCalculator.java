@@ -14,7 +14,7 @@ import java.awt.Color;
 public class pftCalculator extends javax.swing.JFrame {
 
  
-    
+    abcdefg
     
     /**
      * Creates new form pftCalculator
