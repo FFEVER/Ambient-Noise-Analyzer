@@ -1,10 +1,12 @@
-import tkinter
+#!/usr/bin/python3
+from MainWindow import MainWindow
+from PyQt5.QtCore import QDate
 
 class Main():
     def __init__(self):
-        print("This is main")
+        program = MainWindow()
     def startProgram(self):
-        print("Strart program.")
+        now = QDate.currentDate()
 
 
 if __name__ == '__main__':
