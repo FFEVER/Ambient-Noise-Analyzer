@@ -16,13 +16,8 @@ class App(QMainWindow):
     def __init__(self):
         super().__init__()
         self.title = 'Ambient Noise Analyzer'
-        self.left = 0
-        self.top = 0
-        self.width = 480
-        self.height = 300
         self.setWindowTitle(self.title)
-        self.setGeometry(self.left, self.top, self.width, self.height)
-
+        self.setFixedSize(480,300)
         self.table_widget = MyTableWidget(self)
         self.setCentralWidget(self.table_widget)
 
@@ -33,6 +28,7 @@ class App(QMainWindow):
 class MyTableWidget(QWidget):
     def __init__(self, parent):
         super(QWidget, self).__init__(parent)
+
         self.layout = QVBoxLayout(self)
 
         # Initialize tab screen
@@ -40,7 +36,6 @@ class MyTableWidget(QWidget):
         self.tab1 = QWidget()
         self.tab2 = QWidget()
         self.tab3 = QWidget()
-        self.tabs.resize(200, 200)
 
         # Add tabs
         self.tabs.addTab(self.tab1, "Main")
@@ -50,12 +45,12 @@ class MyTableWidget(QWidget):
         # Create first tab
         self.tab1.layout = QVBoxLayout(self)
 
-        self.label = QLabel('Welcom To', self)
+        self.label = QLabel('', self)
         self.label.setPixmap(QPixmap("logo2.png"))
         self.label.setAlignment(Qt.AlignCenter)
 
         self.pushButton1 = QPushButton('', self)
-        self.pushButton1.clicked.connect(self.on_click)
+        self.pushButton1.clicked.connect(self.OtherWindow)
         self.pushButton1.setIcon(QIcon('enter.png'))
 
         self.pushButton1.setIconSize(QSize(200, 100))
@@ -68,13 +63,12 @@ class MyTableWidget(QWidget):
         # Create third tab
 
         self.tab3.layout = QVBoxLayout(self)
-        self.label2 = QLabel('* dBA - A weighted sound levels', self)
+        self.label2 = QLabel('* dBA -> A-weighted sound levels', self)
 
         self.table = QTableWidget(self)
         self.table.setRowCount(15)
         self.table.setColumnCount(3)
         self.table.setHorizontalHeaderLabels(["Level    ", "    Noise Level(dBA)    ", "Maximum Exposure Time per 24 hours"])
-        self.table.resize(500, 500)
         self.table.verticalHeader().setVisible(False)
 
         self.table.setItem(0, 0, QTableWidgetItem("1"))
@@ -217,6 +211,45 @@ class MyTableWidget(QWidget):
 
         self.historyTable.resizeColumnsToContents()
         self.tab2.layout.addWidget(self.historyTable)
+    @pyqtSlot()
+    def on_click(self):
+        self.showdb.hide()
+        self.tab1.show()
+
+    def OtherWindow(self):
+        self.tab1.hide()
+        self.db = "80"
+        self.level = "1"
+        self.startLayout = QGridLayout(self)
+        self.showdb = QWidget()
+        self.showdb.setFixedSize(480, 300)
+
+        self.dbLabel = QLabel('hi', self)
+        self.dbLabel.setText(self.db+' db(A)'+ '\nLevel ' + self.level)
+        self.dbLabel.setAlignment(Qt.AlignCenter)
+        self.dbLabel.setFont(QFont("Arail",24,QFont.Bold))
+        #self.dbLabel.setFixedSize(450,100)
+
+        self.stopButton = QPushButton('STOP',self)
+        self.stopButton.clicked.connect(self.on_click)
+        self.stopButton.setFixedSize(300,50)
+
+        self.Barrow1 = QPushButton('',self)
+        self.Barrow1.setFixedSize(50, 50)
+
+        self.Barrow2 = QPushButton('',self)
+        self.Barrow2.setFixedSize(50, 50)
+
+        self.startLayout.addWidget(self.dbLabel, 0, 1)
+        self.startLayout.addWidget(self.stopButton, 1, 1)
+        self.startLayout.addWidget(self.Barrow1, 0, 0)
+        self.startLayout.addWidget(self.Barrow2, 0, 2)
+
+        self.showdb.setLayout(self.startLayout)
+
+        self.showdb.show()
+        #self.arrow1.show()
+
 
 
 if __name__ == '__main__':
