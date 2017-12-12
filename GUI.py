@@ -130,8 +130,11 @@ class MyTableWidget(QWidget):
 
     @pyqtSlot()
     def on_click(self):
-        self.writeToHistoryFile(HistoryItem("1/1/2017","77.1","22.0"))
-        self.updateHistoryTable()
+        # self.writeToHistoryFile(HistoryItem("1/1/2017","77.1","22.0"))
+        # self.updateHistoryTable()
+
+        self.showdb.hide()
+        self.tab1.show()
 
         # # Initialize Recorder
         # self.recorder = Recorder()
@@ -211,10 +214,6 @@ class MyTableWidget(QWidget):
 
         self.historyTable.resizeColumnsToContents()
         self.tab2.layout.addWidget(self.historyTable)
-    @pyqtSlot()
-    def on_click(self):
-        self.showdb.hide()
-        self.tab1.show()
 
     def OtherWindow(self):
         self.tab1.hide()
