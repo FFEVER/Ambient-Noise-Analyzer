@@ -114,10 +114,10 @@ class MyTableWidget(QWidget):
         self.layout.addWidget(self.tabs)
         self.setLayout(self.layout)
 
-
     @pyqtSlot()
     def on_click(self):
-        print("Clicked")
+        self.showdb.hide()
+        self.tab1.show()
 
     def OtherWindow(self):
         self.tab1.hide()
