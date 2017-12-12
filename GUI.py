@@ -13,10 +13,13 @@ from datetime import datetime
 import time
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 #User lib
 #from Recorder import Recorder
 #from HistoryItem import HistoryItem
 =======
+=======
+>>>>>>> d7003d49e7a9101d696094ced103e84d50b30ec3
 # User libs
 from Recorder import Recorder
 from HistoryItem import HistoryItem
@@ -143,8 +146,11 @@ class MyTableWidget(QWidget):
         self.initializeHistoryTable()
 
 <<<<<<< HEAD
+<<<<<<< HEAD
         self.empty = QIcon('')
 =======
+=======
+>>>>>>> d7003d49e7a9101d696094ced103e84d50b30ec3
     def record(self):
         self.isRecording = True
         start = time.time()
@@ -216,6 +222,9 @@ class MyTableWidget(QWidget):
         output = "%d:%02d:%02d" % (h, m, s)
 
         return output
+<<<<<<< HEAD
+>>>>>>> d7003d49e7a9101d696094ced103e84d50b30ec3
+=======
 >>>>>>> d7003d49e7a9101d696094ced103e84d50b30ec3
 
     @pyqtSlot()
@@ -231,10 +240,17 @@ class MyTableWidget(QWidget):
         self.writeToHistoryFile()
         # Update the table
         self.updateHistoryTable()
+<<<<<<< HEAD
 
 
 
 
+=======
+
+
+
+
+>>>>>>> d7003d49e7a9101d696094ced103e84d50b30ec3
     def writeToHistoryFile(self):
         time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         historyItem = HistoryItem(time,"{:.2f}".format(self.avgDecibel),self.recordedTime)
@@ -371,6 +387,13 @@ class MyTableWidget(QWidget):
         self.Barrow2.setIcon(self.empty)
         self.Barrow1.setIcon(self.Leftarrow)
         self.Barrow1.setIconSize(QSize(40, 40))
+
+
+    def setRightArrow(self):
+        pass
+
+    def setLeftArrow(self):
+        pass
 
 
     def setRightArrow(self):
