@@ -5,6 +5,8 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
+import pickle
+
 #User lib
 from Recorder import Recorder
 from HistoryItem import HistoryItem
@@ -124,34 +126,97 @@ class MyTableWidget(QWidget):
         self.layout.addWidget(self.tabs)
         self.setLayout(self.layout)
 
-        # Initialize Recorder
-        self.recorder = Recorder()
+        self.recorder = None
         # For checking is recording
         self.isRecording = False
 
-        # Read History File
-        history_file = open("history.txt","r")
-
-
+        # Read History File and update table
+        self.initializeHistoryTable()
 
 
     @pyqtSlot()
     def on_click(self):
-        print("*Recording*")
-        self.isRecording = True
+        self.writeToHistoryFile(HistoryItem("1/1/2017","77.1","22.0"))
+        self.updateHistoryTable()
 
+        # # Initialize Recorder
+        # self.recorder = Recorder()
+        # print("*Recording*")
+        # # Set state to recording
+        # self.isRecording = True
+        # # Record until stop button pressed
+        # self.record()
 
+        self.recorder = None
     def record(self):
+        if self.recorder is None:
+            return
+
         while(self.isRecording):
             dB1,dB2 = self.recorder.record(1)
             print(dB1,dB2,self.recorder.avg_decibel(dB1,dB2))
 
-    def addToHistoryFile(self):
-        pass
+    def writeToHistoryFile(self, historyItem):
+        outfile = open("history.pkl", "ab")
+        pickle.dump(historyItem, outfile)
+        outfile.close()
+        del historyItem
+    def readFromHistoryFile(self):
+        objects = []
+        with (open("history.pkl", "rb")) as openfile:
+            while True:
+                try:
+                    objects.append(pickle.load(openfile))
+                except EOFError:
+                    break
+        return objects
+
+    def initializeHistoryTable(self):
+        objects = self.readFromHistoryFile()
+
+        self.tab2.layout = QVBoxLayout(self)
+
+
+        # create Table
+        self.historyTable = QTableWidget(self)
+        self.historyTable.setRowCount(len(objects))
+        self.historyTable.setColumnCount(3)
+        self.historyTable.setHorizontalHeaderLabels(
+            ["Time             ", "                    Noise Level(dBA)                   ", "Durations                  "])
+        self.historyTable.resize(500, 500)
+        self.historyTable.verticalHeader().setVisible(False)
+
+        for i in range(0,len(objects)):
+            objects[i].getTime()
+            self.historyTable.setItem(i, 0, QTableWidgetItem(objects[i].getTime()))
+            self.historyTable.setItem(i, 1, QTableWidgetItem(objects[i].getdba()))
+            self.historyTable.setItem(i, 2, QTableWidgetItem(objects[i].getDuration()))
+
+        self.historyTable.resizeColumnsToContents()
+        self.tab2.layout.addWidget(self.historyTable)
+        self.tab2.setLayout(self.tab2.layout)
 
     def updateHistoryTable(self):
-        pass
+        self.historyTable.clearContents()
 
+        objects = self.readFromHistoryFile()
+        # create Table
+        self.historyTable.setRowCount(len(objects))
+        self.historyTable.setColumnCount(3)
+        self.historyTable.setHorizontalHeaderLabels(
+            ["Time             ", "                    Noise Level(dBA)                   ",
+             "Durations                  "])
+        self.historyTable.resize(500, 500)
+        self.historyTable.verticalHeader().setVisible(False)
+
+        for i in range(0, len(objects)):
+            objects[i].getTime()
+            self.historyTable.setItem(i, 0, QTableWidgetItem(objects[i].getTime()))
+            self.historyTable.setItem(i, 1, QTableWidgetItem(objects[i].getdba()))
+            self.historyTable.setItem(i, 2, QTableWidgetItem(objects[i].getDuration()))
+
+        self.historyTable.resizeColumnsToContents()
+        self.tab2.layout.addWidget(self.historyTable)
 
 
 if __name__ == '__main__':
