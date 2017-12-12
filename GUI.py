@@ -5,6 +5,9 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
+#User lib
+from Recorder import Recorder
+
 
 class App(QMainWindow):
     def __init__(self):
@@ -120,16 +123,23 @@ class MyTableWidget(QWidget):
         self.layout.addWidget(self.tabs)
         self.setLayout(self.layout)
 
+        # Initialize Recorder
+        self.recorder = Recorder()
+        # For checking is recording
+        self.isRecording = False
+
 
     @pyqtSlot()
     def on_click(self):
-        print("Clicked")
+        print("*Recording*")
+        self.isRecording = True
 
-        """self.window= OtherWindow()
-        self.window.show()
-        self.close()
 
-class OtherWindow(QWidget):"""
+    def record(self):
+        while(self.isRecording):
+            dB1,dB2 = self.recorder.record(1)
+            print(dB1,dB2,self.recorder.avg_decibel(dB1,dB2))
+
 
 
 if __name__ == '__main__':

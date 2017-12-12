@@ -2,15 +2,16 @@ import pyaudio
 import numpy
 import math
 from scipy.signal import lfilter
-import audioop
 import spl_lib as spl
 
-
+#Each chuck of array recorded
 CHUNK = 9600
 FORMAT = pyaudio.paInt16
+#mono
 CHANNELS = 1
+#fs must be 44100 because of mic
 RATE = 44100
-RECORD_SECONDS = 10
+#A-weighting
 NUMERATOR, DENOMINATOR = spl.A_weighting(RATE)
 
 
@@ -36,22 +37,24 @@ class Recorder(object):
             dev = self.p.get_device_info_by_index(i)
             print((i, dev['name'], dev['maxInputChannels']))
 
-    def record(self):
-        for i in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
+    def record(self,record_seconds):
+        # RATE => frame per second
+        # CHUNK => frame per buffer
+        # RATE /CHUNK => buffer per second
+        # RATE / CHUNK * SECOND => buffer
+
+        for i in range(0, int(RATE / CHUNK * record_seconds)):
             data1 = self.stream1.read(CHUNK, exception_on_overflow=False)
             data2 = self.stream2.read(CHUNK, exception_on_overflow=False)
             decibel1 = self.to_decibel(data1)
             decibel2 = self.to_decibel(data2)
+        return decibel1,decibel2
 
-
-            print(1 , " " , decibel1)
-            print(2 , " " , decibel2)
-            print("agv " , self.avg_decibel(decibel1,decibel2))
-            print()
+    def terminate(self):
         self.stream1.stop_stream()
         self.stream1.close()
-        # self.stream2.stop_stream()
-        # self.stream2.close()
+        self.stream2.stop_stream()
+        self.stream2.close()
         self.p.terminate()
 
     def to_decibel(self,data_chunk):
@@ -66,12 +69,9 @@ class Recorder(object):
         return new_decibel
 
     def sum_decibel(self,d1,d2):
+        #sum of decibel cannot just sum
         return 10 * math.log10(10 ** (d1 / 10) + 10 ** (d2 / 10))
 
     def avg_decibel(self,d1,d2):
+        #decibel division cannot just divide
         return self.sum_decibel(d1,d2) - (10 * math.log10(2))
-
-
-recorder = Recorder()
-recorder.list_all_device()
-recorder.record()
