@@ -7,6 +7,7 @@ from PyQt5.QtCore import *
 
 #User lib
 from Recorder import Recorder
+from HistoryItem import HistoryItem
 
 
 class App(QMainWindow):
@@ -128,6 +129,11 @@ class MyTableWidget(QWidget):
         # For checking is recording
         self.isRecording = False
 
+        # Read History File
+        history_file = open("history.txt","r")
+
+
+
 
     @pyqtSlot()
     def on_click(self):
@@ -139,6 +145,12 @@ class MyTableWidget(QWidget):
         while(self.isRecording):
             dB1,dB2 = self.recorder.record(1)
             print(dB1,dB2,self.recorder.avg_decibel(dB1,dB2))
+
+    def addToHistoryFile(self):
+        pass
+
+    def updateHistoryTable(self):
+        pass
 
 
 
