@@ -10,6 +10,7 @@ from PyQt5.QtCore import *
 # For history record
 import pickle
 from datetime import datetime
+import time
 
 # User libs
 from Recorder import Recorder
@@ -137,6 +138,7 @@ class MyTableWidget(QWidget):
 
     def record(self):
         self.isRecording = True
+        start = time.time()
 
         print("*Recording*")
         while self.isRecording:
@@ -147,10 +149,44 @@ class MyTableWidget(QWidget):
             # Show average decibel in the window
             # print(dB1, dB2, self.avgDecibel)
             level = self.classify_level(self.avgDecibel)
-            self.dbLabel.setText("{:.2f}".format(self.avgDecibel) + ' db(A)' + '\nLevel ' + str(level))
-            
+            exposure = self.classify_hour(self.avgDecibel)
+            self.recordedTime = self.convertTime(start,time.time())
+            self.dbLabel.setText("{:.2f}".format(self.avgDecibel) + ' db(A)' +
+                                 '\nLevel ' + str(level) + " (" + exposure + ")" +
+                                 '\n' + self.recordedTime)
+
 
         print("*Record done*")
+
+    def classify_hour(self,decibel):
+        if (decibel < 86):
+            return "8 hours"
+        elif (decibel >= 86 and decibel < 88):
+            return "4 hours"
+        elif (decibel >= 88 and decibel < 91):
+            return "2 hours"
+        elif (decibel >= 91 and decibel < 94):
+            return "1 hour"
+        elif (decibel >= 94 and decibel < 97):
+            return "30 minutes"
+        elif (decibel >= 97 and decibel < 100):
+            return "15 minutes"
+        elif (decibel >= 100 and decibel < 103):
+            return "7.5 minutes"
+        elif (decibel >= 103 and decibel < 109):
+            return "112 seconds"
+        elif (decibel >= 109 and decibel < 112):
+            return "56 seconds"
+        elif (decibel >= 112 and decibel < 121):
+            return "28 seconds"
+        elif (decibel >= 121 and decibel < 124):
+            return "7 seconds"
+        elif (decibel >= 124 and decibel < 127):
+            return "3 seconds"
+        elif (decibel >= 127 and decibel < 130):
+            return "1 second"
+        else:
+            return "< 1 second"
 
     def classify_level(self,decibel):
         if(decibel < 97):
@@ -163,6 +199,14 @@ class MyTableWidget(QWidget):
             return 4
         else:
             return 5
+
+    def convertTime(self,start,stop):
+        seconds = int(stop - start)
+        m, s = divmod(seconds, 60)
+        h, m = divmod(m, 60)
+        output = "%d:%02d:%02d" % (h, m, s)
+
+        return output
 
     @pyqtSlot()
     def on_stop(self):
@@ -183,7 +227,7 @@ class MyTableWidget(QWidget):
 
     def writeToHistoryFile(self):
         time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        historyItem = HistoryItem(time,str(self.avgDecibel),str(self.recordedTime))
+        historyItem = HistoryItem(time,"{:.2f}".format(self.avgDecibel),self.recordedTime)
 
         try:
             outfile = open("history.pkl", "ab")
@@ -224,7 +268,7 @@ class MyTableWidget(QWidget):
         self.historyTable.setRowCount(len(objects))
         self.historyTable.setColumnCount(3)
         self.historyTable.setHorizontalHeaderLabels(
-            ["                   Time                   ", "           Noise Level(dBA)          ", "Durations           "])
+            ["Time", "    Noise Level(dBA)    ", "Durations    "])
         self.historyTable.resize(500, 500)
         self.historyTable.verticalHeader().setVisible(False)
 
@@ -246,8 +290,7 @@ class MyTableWidget(QWidget):
         self.historyTable.setRowCount(len(objects))
         self.historyTable.setColumnCount(3)
         self.historyTable.setHorizontalHeaderLabels(
-            ["Time             ", "              Noise Level(dBA)              ",
-             "Durations                  "])
+            ["Time", "    Noise Level(dBA)    ", "Durations    "])
         self.historyTable.resize(500, 500)
         self.historyTable.verticalHeader().setVisible(False)
 
