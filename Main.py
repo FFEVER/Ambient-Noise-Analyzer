@@ -8,7 +8,6 @@ class Main():
     def startProgram(self):
         now = QDate.currentDate()
 
-
 if __name__ == '__main__':
     main = Main()
     main.startProgram()
