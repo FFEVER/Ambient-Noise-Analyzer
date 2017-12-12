@@ -250,6 +250,11 @@ class MyTableWidget(QWidget):
         #self.arrow1.show()
 
 
+    def setRightArrow(self):
+        pass
+    
+    def setLeftArrow(self):
+        pass
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
