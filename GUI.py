@@ -1,13 +1,17 @@
 import sys
 from builtins import super
 
+import _thread
+
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
+# For history record
 import pickle
+from datetime import datetime
 
-#User lib
+# User libs
 from Recorder import Recorder
 from HistoryItem import HistoryItem
 
@@ -50,7 +54,7 @@ class MyTableWidget(QWidget):
         self.label.setAlignment(Qt.AlignCenter)
 
         self.pushButton1 = QPushButton('', self)
-        self.pushButton1.clicked.connect(self.OtherWindow)
+        self.pushButton1.clicked.connect(self.on_start)
         self.pushButton1.setIcon(QIcon('enter.png'))
 
         self.pushButton1.setIconSize(QSize(200, 100))
@@ -120,46 +124,87 @@ class MyTableWidget(QWidget):
         self.layout.addWidget(self.tabs)
         self.setLayout(self.layout)
 
-        self.recorder = None
+        self.recorder = Recorder()
         # For checking is recording
         self.isRecording = False
+        # Saving the last average decibel
+        self.avgDecibel = 0
+        # Saving the last time used
+        self.recordedTime = 0
 
         # Read History File and update table
         self.initializeHistoryTable()
 
+    def record(self):
+        self.isRecording = True
+
+        print("*Recording*")
+        while self.isRecording:
+            # record sound from two mic
+            dB1, dB2 = self.recorder.record(1)
+            # Get average decibel
+            self.avgDecibel = self.recorder.avg_decibel(dB1, dB2)
+            # Show average decibel in the window
+            # print(dB1, dB2, self.avgDecibel)
+            level = self.classify_level(self.avgDecibel)
+            self.dbLabel.setText("{:.2f}".format(self.avgDecibel) + ' db(A)' + '\nLevel ' + str(level))
+            
+
+        print("*Record done*")
+
+    def classify_level(self,decibel):
+        if(decibel < 97):
+            return 1
+        elif(decibel >= 97 and decibel <109):
+            return 2
+        elif (decibel >= 109 and decibel < 121):
+            return 3
+        elif (decibel >= 121 and decibel < 130):
+            return 4
+        else:
+            return 5
 
     @pyqtSlot()
-    def on_click(self):
-        # self.writeToHistoryFile(HistoryItem("1/1/2017","77.1","22.0"))
-        # self.updateHistoryTable()
-
-        self.showdb.hide()
+    def on_stop(self):
+        # Close recording window
+        self.showdb.close()
         self.tab1.show()
 
-        # # Initialize Recorder
-        # self.recorder = Recorder()
-        # print("*Recording*")
-        # # Set state to recording
-        # self.isRecording = True
-        # # Record until stop button pressed
-        # self.record()
+        # Reset isRecording
+        self.isRecording = False
 
-        self.recorder = None
-    def record(self):
-        if self.recorder is None:
-            return
+        # Add to history
+        self.writeToHistoryFile()
+        # Update the table
+        self.updateHistoryTable()
 
-        while(self.isRecording):
-            dB1,dB2 = self.recorder.record(1)
-            print(dB1,dB2,self.recorder.avg_decibel(dB1,dB2))
 
-    def writeToHistoryFile(self, historyItem):
-        outfile = open("history.pkl", "ab")
+
+
+    def writeToHistoryFile(self):
+        time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        historyItem = HistoryItem(time,str(self.avgDecibel),str(self.recordedTime))
+
+        try:
+            outfile = open("history.pkl", "ab")
+        except FileNotFoundError:
+            outfile = open("history.pkl", "wb")
+
         pickle.dump(historyItem, outfile)
         outfile.close()
-        del historyItem
+
+
     def readFromHistoryFile(self):
         objects = []
+
+        # Check file existance first
+        try:
+            infile = open("history.pkl", "rb")
+            infile.close()
+        except FileNotFoundError:
+            infile = open("history.pkl", "wb")
+            infile.close()
+
         with (open("history.pkl", "rb")) as openfile:
             while True:
                 try:
@@ -179,7 +224,7 @@ class MyTableWidget(QWidget):
         self.historyTable.setRowCount(len(objects))
         self.historyTable.setColumnCount(3)
         self.historyTable.setHorizontalHeaderLabels(
-            ["Time             ", "                    Noise Level(dBA)                   ", "Durations                  "])
+            ["                   Time                   ", "           Noise Level(dBA)          ", "Durations           "])
         self.historyTable.resize(500, 500)
         self.historyTable.verticalHeader().setVisible(False)
 
@@ -201,7 +246,7 @@ class MyTableWidget(QWidget):
         self.historyTable.setRowCount(len(objects))
         self.historyTable.setColumnCount(3)
         self.historyTable.setHorizontalHeaderLabels(
-            ["Time             ", "                    Noise Level(dBA)                   ",
+            ["Time             ", "              Noise Level(dBA)              ",
              "Durations                  "])
         self.historyTable.resize(500, 500)
         self.historyTable.verticalHeader().setVisible(False)
@@ -215,22 +260,30 @@ class MyTableWidget(QWidget):
         self.historyTable.resizeColumnsToContents()
         self.tab2.layout.addWidget(self.historyTable)
 
-    def OtherWindow(self):
+    @pyqtSlot()
+    def on_start(self):
+        # Create new window
+        self.otherWindow()
+
+        # Start recording
+        _thread.start_new_thread(self.record, ())
+
+
+    def otherWindow(self):
         self.tab1.hide()
-        self.db = "80"
-        self.level = "1"
+
+        # Create new window
         self.startLayout = QGridLayout(self)
         self.showdb = QWidget()
         self.showdb.setFixedSize(480, 300)
 
-        self.dbLabel = QLabel('hi', self)
-        self.dbLabel.setText(self.db+' db(A)'+ '\nLevel ' + self.level)
+        self.dbLabel = QLabel('', self)
         self.dbLabel.setAlignment(Qt.AlignCenter)
         self.dbLabel.setFont(QFont("Arail",24,QFont.Bold))
         #self.dbLabel.setFixedSize(450,100)
 
         self.stopButton = QPushButton('STOP',self)
-        self.stopButton.clicked.connect(self.on_click)
+        self.stopButton.clicked.connect(self.on_stop)
         self.stopButton.setFixedSize(300,50)
 
         self.Barrow1 = QPushButton('',self)
@@ -250,9 +303,11 @@ class MyTableWidget(QWidget):
         #self.arrow1.show()
 
 
+
+
     def setRightArrow(self):
         pass
-    
+
     def setLeftArrow(self):
         pass
 
