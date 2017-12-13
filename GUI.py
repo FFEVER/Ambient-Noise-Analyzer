@@ -10,20 +10,12 @@ from PyQt5.QtCore import *
 # For history record
 import pickle
 from datetime import datetime
+
 import time
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-#User lib
-#from Recorder import Recorder
-#from HistoryItem import HistoryItem
-=======
-=======
->>>>>>> d7003d49e7a9101d696094ced103e84d50b30ec3
 # User libs
 from Recorder import Recorder
 from HistoryItem import HistoryItem
->>>>>>> d7003d49e7a9101d696094ced103e84d50b30ec3
 
 
 class App(QMainWindow):
@@ -31,7 +23,7 @@ class App(QMainWindow):
         super().__init__()
         self.title = 'Ambient Noise Analyzer'
         self.setWindowTitle(self.title)
-        self.setFixedSize(480,300)
+        self.setFixedSize(480, 270)
         self.table_widget = MyTableWidget(self)
         self.setCentralWidget(self.table_widget)
 
@@ -87,7 +79,7 @@ class MyTableWidget(QWidget):
 
         self.table.setItem(0, 0, QTableWidgetItem("1"))
         self.table.setItem(0, 1, QTableWidgetItem("85"))
-        self.table.setItem(0, 2, QTableWidgetItem("8 hours"))
+        self.table.setItem(0, 2, QTableWidgetItem("> 8 hours"))
         self.table.setItem(1, 1, QTableWidgetItem("88"))
         self.table.setItem(1, 2, QTableWidgetItem("4 hours"))
         self.table.setItem(2, 1, QTableWidgetItem("91"))
@@ -117,11 +109,11 @@ class MyTableWidget(QWidget):
         self.table.setItem(11, 1, QTableWidgetItem("124"))
         self.table.setItem(11, 2, QTableWidgetItem("3 seconds"))
         self.table.setItem(12, 1, QTableWidgetItem("127"))
-        self.table.setItem(12, 2, QTableWidgetItem("1 seconds"))
+        self.table.setItem(12, 2, QTableWidgetItem("1 second"))
 
         self.table.setItem(13, 0, QTableWidgetItem("5"))
         self.table.setItem(13, 1, QTableWidgetItem("130"))
-        self.table.setItem(13, 2, QTableWidgetItem("< 1 seconds"))
+        self.table.setItem(13, 2, QTableWidgetItem("< 1 second"))
         self.table.setItem(14, 1, QTableWidgetItem("140"))
         self.table.setItem(14, 2, QTableWidgetItem("NO Exposure"))
 
@@ -145,12 +137,9 @@ class MyTableWidget(QWidget):
         # Read History File and update table
         self.initializeHistoryTable()
 
-<<<<<<< HEAD
-<<<<<<< HEAD
         self.empty = QIcon('')
-=======
-=======
->>>>>>> d7003d49e7a9101d696094ced103e84d50b30ec3
+
+
     def record(self):
         self.isRecording = True
         start = time.time()
@@ -161,21 +150,28 @@ class MyTableWidget(QWidget):
             dB1, dB2 = self.recorder.record(1)
             # Get average decibel
             self.avgDecibel = self.recorder.avg_decibel(dB1, dB2)
-            # Show average decibel in the window
-            # print(dB1, dB2, self.avgDecibel)
+            # Show average decibel, Level and record time in the window
             level = self.classify_level(self.avgDecibel)
             exposure = self.classify_hour(self.avgDecibel)
             self.recordedTime = self.convertTime(start,time.time())
             self.dbLabel.setText("{:.2f}".format(self.avgDecibel) + ' db(A)' +
                                  '\nLevel ' + str(level) + " (" + exposure + ")" +
                                  '\n' + self.recordedTime)
+            # Show which way the noise louder
+            self.clssify_arrow_direction(dB1,dB2)
 
 
         print("*Record done*")
 
+    def clssify_arrow_direction(self,db1,db2):
+        if(db1 > db2):
+            self.show_right()
+        else:
+            self.show_left()
+
     def classify_hour(self,decibel):
         if (decibel < 86):
-            return "8 hours"
+            return "> 8 hours"
         elif (decibel >= 86 and decibel < 88):
             return "4 hours"
         elif (decibel >= 88 and decibel < 91):
@@ -222,10 +218,6 @@ class MyTableWidget(QWidget):
         output = "%d:%02d:%02d" % (h, m, s)
 
         return output
-<<<<<<< HEAD
->>>>>>> d7003d49e7a9101d696094ced103e84d50b30ec3
-=======
->>>>>>> d7003d49e7a9101d696094ced103e84d50b30ec3
 
     @pyqtSlot()
     def on_stop(self):
@@ -240,17 +232,7 @@ class MyTableWidget(QWidget):
         self.writeToHistoryFile()
         # Update the table
         self.updateHistoryTable()
-<<<<<<< HEAD
 
-
-
-
-=======
-
-
-
-
->>>>>>> d7003d49e7a9101d696094ced103e84d50b30ec3
     def writeToHistoryFile(self):
         if self.avgDecibel <= 0:
             return
@@ -380,7 +362,6 @@ class MyTableWidget(QWidget):
 
     def show_right(self):
         self.Rightarrow = QIcon('Rightarrow.png')
-
         self.Barrow1.setIcon(self.empty)
         self.Barrow2.setIcon(self.Rightarrow)
         self.Barrow2.setIconSize(QSize(40, 40))
@@ -390,20 +371,6 @@ class MyTableWidget(QWidget):
         self.Barrow2.setIcon(self.empty)
         self.Barrow1.setIcon(self.Leftarrow)
         self.Barrow1.setIconSize(QSize(40, 40))
-
-
-    def setRightArrow(self):
-        pass
-
-    def setLeftArrow(self):
-        pass
-
-
-    def setRightArrow(self):
-        pass
-
-    def setLeftArrow(self):
-        pass
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

@@ -1,4 +1,4 @@
-"""import pyaudio
+import pyaudio
 import numpy
 import math
 from scipy.signal import lfilter
@@ -75,4 +75,3 @@ class Recorder(object):
     def avg_decibel(self,d1,d2):
         #decibel division cannot just divide
         return self.sum_decibel(d1,d2) - (10 * math.log10(2))
-"""
