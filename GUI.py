@@ -226,8 +226,10 @@ class MyTableWidget(QWidget):
 
 
     def writeToHistoryFile(self):
+        if self.avgDecibel <= 0:
+            return
         time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        historyItem = HistoryItem(time,"{:.2f}".format(self.avgDecibel),self.recordedTime)
+        historyItem = HistoryItem(time," {:.2f} ".format(self.avgDecibel),self.recordedTime)
 
         try:
             outfile = open("history.pkl", "ab")
@@ -283,6 +285,7 @@ class MyTableWidget(QWidget):
         self.tab2.setLayout(self.tab2.layout)
 
     def updateHistoryTable(self):
+
         self.historyTable.clearContents()
 
         objects = self.readFromHistoryFile()
