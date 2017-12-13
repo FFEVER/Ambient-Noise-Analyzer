@@ -12,9 +12,18 @@ import pickle
 from datetime import datetime
 import time
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+#User lib
+#from Recorder import Recorder
+#from HistoryItem import HistoryItem
+=======
+=======
+>>>>>>> d7003d49e7a9101d696094ced103e84d50b30ec3
 # User libs
 from Recorder import Recorder
 from HistoryItem import HistoryItem
+>>>>>>> d7003d49e7a9101d696094ced103e84d50b30ec3
 
 
 class App(QMainWindow):
@@ -136,6 +145,12 @@ class MyTableWidget(QWidget):
         # Read History File and update table
         self.initializeHistoryTable()
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+        self.empty = QIcon('')
+=======
+=======
+>>>>>>> d7003d49e7a9101d696094ced103e84d50b30ec3
     def record(self):
         self.isRecording = True
         start = time.time()
@@ -207,6 +222,10 @@ class MyTableWidget(QWidget):
         output = "%d:%02d:%02d" % (h, m, s)
 
         return output
+<<<<<<< HEAD
+>>>>>>> d7003d49e7a9101d696094ced103e84d50b30ec3
+=======
+>>>>>>> d7003d49e7a9101d696094ced103e84d50b30ec3
 
     @pyqtSlot()
     def on_stop(self):
@@ -221,10 +240,17 @@ class MyTableWidget(QWidget):
         self.writeToHistoryFile()
         # Update the table
         self.updateHistoryTable()
+<<<<<<< HEAD
 
 
 
 
+=======
+
+
+
+
+>>>>>>> d7003d49e7a9101d696094ced103e84d50b30ec3
     def writeToHistoryFile(self):
         if self.avgDecibel <= 0:
             return
@@ -332,11 +358,16 @@ class MyTableWidget(QWidget):
         self.stopButton.clicked.connect(self.on_stop)
         self.stopButton.setFixedSize(300,50)
 
-        self.Barrow1 = QPushButton('',self)
+        self.Barrow1 = QPushButton('', self)
+        self.Barrow2 = QPushButton('', self)
         self.Barrow1.setFixedSize(50, 50)
-
-        self.Barrow2 = QPushButton('',self)
         self.Barrow2.setFixedSize(50, 50)
+
+        self.Barrow1.clicked.connect(self.show_left)
+        self.Barrow2.clicked.connect(self.show_right)
+
+        self.Barrow1.setStyleSheet("border:0px")
+        self.Barrow2.setStyleSheet("border:0px")
 
         self.startLayout.addWidget(self.dbLabel, 0, 1)
         self.startLayout.addWidget(self.stopButton, 1, 1)
@@ -346,9 +377,26 @@ class MyTableWidget(QWidget):
         self.showdb.setLayout(self.startLayout)
 
         self.showdb.show()
-        #self.arrow1.show()
+
+    def show_right(self):
+        self.Rightarrow = QIcon('Rightarrow.png')
+
+        self.Barrow1.setIcon(self.empty)
+        self.Barrow2.setIcon(self.Rightarrow)
+        self.Barrow2.setIconSize(QSize(40, 40))
+
+    def show_left(self):
+        self.Leftarrow = QIcon('Leftarrow.png')
+        self.Barrow2.setIcon(self.empty)
+        self.Barrow1.setIcon(self.Leftarrow)
+        self.Barrow1.setIconSize(QSize(40, 40))
 
 
+    def setRightArrow(self):
+        pass
+
+    def setLeftArrow(self):
+        pass
 
 
     def setRightArrow(self):
