@@ -1,49 +1,20 @@
 # Ambient-Noise-Analyzer
-This is the ambient noise analyzer project for Assembly subject.
+This is the ambient noise analyzer project for my Computer Organization subject.
 
 
-## smaller title
-### smaller title
-###### smallest title
+## Main features
+- Record the surrounding noise and convert to dBA (decibel-A) in real time
+- Keep history
+- Suggest health advice (maximum exposure time per day)
+- Show the direction where the sound come from
 
-`code`
-~~strike~~
-*italic*
-**bold**
-> quote
-also quote
+## Project Hardware Requirement
+- Raspberry Pi 3 model B
+- 2 Microphone with built-in driver software
 
-```
-multiple
-line
-of
-code
-```
-
-[Github Link](www.github.com)
-
-List
-- First
-    - More First
-        - More More First
-- second
-- third
-- forth
-- fifth
-
-Number List
-1. First
-2. Second
-    1. More Second
-        1. More More Second
-3. Third
-
-Task List
-- [ ] Check 1
-- [X] Check 2
-- [ ] Check 3
-
-
-
-
+## Project Software Requirement
+- Python 3.6
+- Numpy module
+- pyaudio module
+- 
 
