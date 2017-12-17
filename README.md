@@ -7,6 +7,7 @@ This is the ambient noise analyzer project for my Computer Organization subject.
 - Keep history
 - Suggest health advice (maximum exposure time per day)
 - Show the direction where the sound come from
+- Clear looking GUI and easy to navigate
 
 ## Project Hardware Requirement
 - Raspberry Pi 3 model B
@@ -16,5 +17,5 @@ This is the ambient noise analyzer project for my Computer Organization subject.
 - Python 3.6
 - Numpy module
 - pyaudio module
-- 
+- pyQt5 module
 
